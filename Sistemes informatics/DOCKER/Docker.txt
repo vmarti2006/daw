@@ -1,0 +1,545 @@
+
+
+Practica 1
+
+1. Descarregar la imatge d'ubuntu
+
+(docker pull ubuntu)
+
+2. Mostrar les imatges descarregades 
+
+(docker images)
+
+3. Crea i executa un contenidor amb Ubuntu en mode interactiu.
+
+(docker run -it ubuntu)
+
+4. Sortir del contenidor
+
+(exit)
+
+5. Mostra tots els contenidors (actius i aturats)
+
+(docker ps -a)
+
+6. Esborra un contenidor pel seu ID.
+
+(docker rm id)
+
+Practica 2
+
+
+1. Decarrega la imatge base d'ubuntu.
+
+docker pull ubuntu:latest
+
+
+2. Dockerfile (Instal·lació Apache + Joe)
+
+	1. Crearem una carpeta per exemple Dockerfile/apachejoe
+	2. Dins de apachejoe, crearem un fitxer dockerfile sense extensio 
+
+FROM ubuntu:latest
+RUN apt-get update && apt-get install -y \
+    apache2 \
+    joe \
+    && apt-get clean
+EXPOSE 80
+CMD ["apachectl", "-D", "FOREGROUND"]
+
+3. Construir la imatge docker build -t apache-joe . --> crea una imatge amb nom apache-joe 
+a partir del dockerfile
+
+
+4. Executar el contenidor 
+
+docker run -d -p 8080:80 --name apache-joe-container apache-joe
+→ Executa el contenidor i mapeja el port 80 (Apache) al 8080 del teu PC.
+
+Practica 3 
+
+1 . Accedir al contenidor per fer canvis
+
+docker exec -it apache-joe-container bash → Obre un terminal dins del contenidor en marxa.
+
+Editar arxius dins del contenidor:
+Ex: joe /etc/apache2/apache2.conf
+(Per sortir de Joe: ctrl + k + x)
+
+
+2. Canviar DocumentRoot d'Apache 
+
+nano /etc/apache2/sites-available/000-default.conf
+
+3. Canviem el DocumentRoot /var/www/html
+
+per exemple a /home/jordi o la teva ruta personalitzada 
+
+guardem amb ctrl + k + s
+
+4. Reiniciar apache 
+
+apachectl -k restart
+
+///Ara hem de tornar a fer la imatge a partir del contenidor. 
+///Aquest el deixo per vosaltres… Serà pregunta d’una prova avaluable?... 
+
+5.
+
+Crear nova imatge des d’un contenidor (no donat, però important!)
+
+Com fer per si surt
+
+docker commit apache-joe-container apache-joe-v2
+→ Crea nova imatge amb els canvis fets dins del contenidor.
+
+important el contenidor te que esta en marcha 
+
+si no esta (docker start apache-joe-containter)
+
+ara si (docker commit apache-joe-container apache-joe-v2)
+
+per provar la nova imatge tal que aixi:
+
+docker run -d -p 8081:80 --name apache-joe-v2-container apache-joe-v2
+Així no sobrescrius l'anterior contenidor i pots comparar si tot funciona.
+
+Practica 4
+
+1. Accedir al contenidor 
+
+docker exec -it apache-joe-container bash
+→ Entrar al contenidor per modificar fitxers o permisos.
+
+2. Permisos del directori
+
+Dins del contenidor, si no es pot accedir a /home/ubuntu/www, dóna permisos:
+chmod -R 755 /home/ubuntu/www
+
+3. Modificar DocumentRoot d'apache
+
+1 editar el fitxer.
+
+joe /etc/apache2/sites-available/000-default.conf
+
+2 canvia 
+
+DocumentRoot /var/www/html
+
+per DocumentRoot /home/ubuntu/www
+
+guaedem ctrl + k + s
+surtim ctrl + k + x
+
+i reiniciem apache 
+
+apachectl -k restart
+
+
+4. Afegir permisos d'acces al directori
+
+Afegeix al final del fitxer (abans de </VirtualHost>):
+
+<Directory /home/ubuntu/www>
+    Options Indexes FollowSymLinks
+    AllowOverride None
+    Require all granted
+</Directory>
+
+(reiniciar un apache un altre cop)
+
+5. Copiar una imatge al contenidor 
+
+docker cp "C:\ruta\de\la\imatge.jpg" <id_contenidor>:/home/ubuntu/www
+
+exemple "docker cp "C:\Users\jordi\Pictures\foto.jpg" apache-joe-container:/home/ubuntu/www"
+
+
+No olvidar els canvis dins del contenidor anvis dins del contenidor → s'han de guardar com a nova imatge:
+
+docker commit apache-joe-container apache-joe-v4
+
+
+Practica 5
+
+🐳 Exercici Docker 0.0.5 – Volums
+
+En aquest exercici hem vist com mantenir dades persistents entre contenidors fent servir volums, que és una manera neta i segura de compartir arxius entre el contenidor i l’host.
+
+🔹 Què és un volum?
+
+Un volum és un espai d’emmagatzematge que crea Docker i que ens permet guardar dades fora del contenidor, de manera que no es perden encara que l’esborrem.
+ T-
+També va bé per compartir dades entre diversos contenidors.
+
+🔸 Comandes importants:
+
+Crear un volum:
+docker volume create nom_del_volum
+
+Llistar volumns:
+docker volume ls
+
+Veure informacio del volum:
+docker volume inspect nom_del_volum
+
+Esborrar un volum:
+docker volume rm nom_del_volum
+
+Esborrar tots els volums que no s'estan usant:
+docker volume prune
+
+
+🛠️ Ús d’un volum en un contenidor
+
+Hi ha dues maneres de muntar un volum:
+
+Forma Curta:
+docker run -d -v nom_del_volum:/ruta/dins/contenidor imatge
+
+Ex:
+docker run -d -v my-volume:/data nginx
+
+Forma llarga (més clara):
+docker run -d --mount type=volume,source=my-volume,target=/data nginx
+
+
+On es guarden?
+
+Els volums es guarden al sistema host (Linux) a:
+/var/lib/docker/volumes/nom_del_volum/_data
+
+
+🧪 Exemple pràctic (resumit)
+
+Crear un volum:
+docker volume create my-data
+
+Crear contenidor amb el volum:
+docker run -d --name my-container -v my-data:/app busybox
+
+Escriure dins del volum:
+docker exec my-container sh -c "echo 'Hola volum!' > /app/salutacio.txt"
+
+Esborrar el contenidor:
+docker stop my-container
+docker rm my-container
+
+Tornar a llegir el fitxer amb un altre contenidor:
+docker run -it --rm -v my-data:/app busybox cat /app/salutacio.txt
+
+El fitxer segueix allà, perquè està dins del volum.
+
+Practica 6
+
+
+Docker – Volums en Windows (resum curt)
+
+Quan treballes amb Docker a Windows, pots fer servir bind mounts per mapar carpetes locals del teu PC dins del contenidor i així tenir persistència de dades.
+
+🔹 Com fer-ho (forma curta amb -v)
+
+docker run -it --rm -v c:/Volum-docker:/data busybox
+
+c:/Volum-docker → Carpeta del teu PC (host)
+
+/data → Carpeta dins del contenidor
+
+⚠️ Cal posar les rutes amb / i la lletra del disc en minúscules (c:/, no C:\)
+
+🔸 Forma llarga amb --mount (més clara)
+
+docker run -it --rm --mount type=bind,source=c:/Volum-docker,target=/data busybox
+
+///Abans de provar-ho
+
+Comparteix la carpeta amb Docker Desktop:
+
+Ves a Settings > Resources > File Sharing
+
+Afegeix C:\Volum-docker
+
+Comprova permisos del teu usuari a la carpeta.
+
+
+🔍 Per comprovar que funciona:
+
+Escriu un fitxer al teu PC:
+echo "Hola des de Windows" > C:\Volum-docker\prova.txt
+
+Entra al contenidor i mira si hi és:
+docker run -it --rm -v c:/Volum-docker:/data busybox
+cat /data/prova.txt
+
+
+Practica 7
+
+🐳 Docker 0.0.7 – Docker Compose (resum curt)
+
+En aquesta pràctica hem creat una aplicació amb dos serveis mitjançant Docker Compose:
+
+🟢 Un servidor Node.js (API que compta visites)
+
+🔴 Un servei Redis (guarda el nombre de visites)
+
+📁 Estructura del projecte:
+docker-compose-practice/
+│
+├── app/
+│   ├── server.js
+│   ├── package.json
+│   └── Dockerfile
+│
+└── docker-compose.yml
+⚙️ Fitxers importants
+1. app/server.js (servidor Node.js)
+
+    Mostra les visites a / i les desa a Redis.
+
+    Redis es connecta a host: 'redis'.
+
+2. app/package.json
+
+    Conté les dependències:
+
+        "express" per al servidor web.
+
+        "redis" per connectar amb Redis.
+
+    Script per arrencar: "start": "node server.js"
+
+
+3. app/Dockerfile:
+FROM node:alpine
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install
+COPY . .
+CMD ["npm", "start"]
+
+
+🐳 docker-compose.yml (defineix els serveis):
+
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+    volumes:
+      - ./app:/usr/src/app
+    command: npm start
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
+
+depends_on: Redis arrenca abans que app.
+
+volumes: Permet veure canvis sense rebuild.
+
+🔧 Execució:
+cd docker-compose-practice
+docker-compose up --build
+
+Practica 8
+
+🌐 Docker 0.0.8 – Xarxes en Docker (resum curt)
+
+Aquesta pràctica serveix per entendre com funciona la comunicació entre contenidors a través de xarxes Docker personalitzades.
+
+🔧 1. Crear dues xarxes:
+docker network create Xarxa1
+docker network create Xarxa2
+
+🐳 2. Llençar contenidors:
+# Contenidor 1 → Xarxa1
+docker run -dit --name alpine1 --network Xarxa1 alpine sh
+
+# Contenidor 2 → Xarxa2
+docker run -dit --name alpine2 --network Xarxa2 alpine sh
+
+# Contenidor 3 → Xarxa1 i Xarxa2
+docker run -dit --name alpine3 --network Xarxa1 alpine sh
+docker network connect Xarxa2 alpine3
+
+
+🔍 3. Comprovació de connectivitat
+
+Des de alpine1:
+docker exec -it alpine1 sh
+ping alpine3     # FUNCIONA (compartida Xarxa1)
+ping alpine2     # NO FUNCIONA (xarxes diferents)
+
+
+Des de alpine3:
+docker exec -it alpine3 sh
+ping alpine1     # FUNCIONA
+ping alpine2     # FUNCIONA (està a les dues xarxes)
+
+
+💡 4. Reflexió
+
+Només poden comunicar-se si estan a la mateixa xarxa.
+
+Un contenidor pot estar a dues xarxes a la vegada, fent de pont.
+
+🧹 5. Netejar:
+docker container stop alpine1 alpine2 alpine3
+docker container rm alpine1 alpine2 alpine3
+docker network rm Xarxa1 Xarxa2
+
+🛠️ Notes útils
+
+Instalar ping:
+apt install iputils-ping
+
+Instalar ifconfig:
+apt install net-tools
+
+Practica 9
+
+
+🐳 Docker – Imatge → Contenidor (resum curt)
+
+En aquest exercici hem creat una imatge pròpia amb un script Python i hem executat un contenidor basat en aquesta imatge.
+
+📝 Fitxers
+Dockerfile:
+FROM ubuntu:20.04
+RUN apt-get update && apt-get install -y python3
+COPY hola.py /app/hola.py
+WORKDIR /app
+CMD ["python3", "hola.py"]
+
+hola.py:
+print("Hola, sóc en Jordi i això és un contenidor creat a partir d’una imatge pròpia!")
+
+⚙️ Passos
+
+Construir la imatge:
+docker build -t hola-container .
+
+Executar el contenidor:
+docker run --rm hola-container
+
+✅ Resultat esperat
+
+Hola, sóc en Jordi i això és un contenidor creat a partir d’una imatge pròpia!
+
+
+Practica 10
+
+🐳 Docker – Docker Compose (multi-contenidors)
+
+En aquesta pràctica hem creat un entorn amb WordPress i MySQL utilitzant Docker Compose.
+
+📄 docker-compose.yml:
+version: '3'
+
+services:
+  wordpress:
+    image: wordpress
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: user
+      WORDPRESS_DB_PASSWORD: password
+      WORDPRESS_DB_NAME: wpdb
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: wpdb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+
+⚙️ Passos
+
+Arrencar els serveis:
+docker-compose up
+
+
+Comprovar el funcionament:
+
+Obre el navegador a:
+👉 http://localhost:8080
+
+Hauria d’aparèixer l’instal·lador de WordPress.
+
+Aturar i eliminar els serveis:
+docker-compose down
+
+
+Practica 11
+
+🐳 Docker – Xarxes i Volums
+
+Aquest exercici mostra com usar xarxes per connectar contenidors i volums per persistir dades a Docker.
+
+
+📄 docker-compose.yml:
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: prova
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - mynet
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_USER: user
+      PMA_PASSWORD: pass
+    ports:
+      - "8081:80"
+    networks:
+      - mynet
+
+networks:
+  mynet:
+
+volumes:
+  db_data:
+
+
+⚙️ Passos
+
+Arrenquem els serveis:
+docker-compose up -d
+
+
+Comprovem el funcionament:
+
+Accedeix a:
+👉 http://localhost:8081
+
+Entra amb les credencials (usuari: user, contrasenya: pass) i comprova que pots veure la base de dades prova.
+
+Aturem els serveis:
+docker-compose down
+
+Comprova la persistència de dades:
+
+Torna a arrencar amb:
+docker-compose up -d
+
+
+Comprova que la base de dades i les taules encara estan disponibles, gràcies al volum db_data.

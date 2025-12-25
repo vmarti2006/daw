@@ -1,0 +1,183 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  background-color: #c4efeb;
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header {
+  background-color: #e1b9f3;
+  padding: 1.5rem;
+  text-align: center;
+  z-index: 1001;
+}
+
+.header h1 {
+  font-size: 2rem;
+}
+
+/* Contenedor principal */
+.container {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Contenido principal */
+.main-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-right: 240px; 
+}
+
+/* Secciones main */
+.section {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1.5rem;
+  flex: 1;
+  min-width: 250px;
+  max-width: 400px;
+}
+
+.section h2 {
+  margin-bottom: 0.8rem;
+  color: #9b0165;
+}
+
+.section p {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* Destacada */
+.destacada {
+  position: relative;
+}
+
+.destacada::before {
+  content: "★";
+  position: absolute;
+  top: -18px;
+  right: -15px;
+  background: black;
+  color: plum;
+  font-size: 20px;
+  padding: 6px;
+  border-radius: 90%;
+}
+
+/* Aside fijo */
+.sidebar {
+  position: fixed;
+  top: 80px;
+  right: -5px;
+  width: 220px;
+  height: calc(100vh - 140px); 
+  background: #30656b;
+  padding: 1.5rem;
+  border-radius: 5%;
+  border: 5px solid #568071;
+  overflow-y: auto;
+}
+
+.sidebar ul {
+  list-style: none;
+}
+
+.sidebar li {
+  margin-bottom: 1rem;
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: #cea0ef;
+  font-weight: 500;
+  font-size: 1.1rem;
+  display: block;
+  padding: 0.5rem 0;
+}
+
+/* Footer */
+.footer {
+  background: #212121;
+  color: #fff;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+  height: 60px;
+}
+
+/* Responsivo */
+@media (max-width: 992px) {
+  .main-content {
+    margin-right: 0;
+  }
+
+  .sidebar {
+    bottom: 60px;
+    left: 0;
+    right: 0;
+    top: auto;
+    width: 100%;
+    height: 60px;
+    padding: 0.5rem;
+    border-radius: 0;
+    border: none;
+    background: #30656b;
+    display: flex;
+    align-items: center;
+  }
+
+  .sidebar ul {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+  }
+
+  .sidebar a {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255,255,255,0.2);
+    border-radius: 6px;
+  }
+}
+
+@media (max-width: 600px) {
+  .main-content {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .section {
+    max-width: 100%;
+  }
+
+  .header h1 {
+    font-size: 1.6rem;
+  }
+
+  .sidebar {
+    height: 50px;
+  }
+
+  .sidebar a {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.8rem;
+  }
+}
