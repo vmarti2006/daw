@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "superfort", "superfort.csproj", "{3C75BE53-BABC-1281-B874-44A23A4C5FF3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3C75BE53-BABC-1281-B874-44A23A4C5FF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C75BE53-BABC-1281-B874-44A23A4C5FF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C75BE53-BABC-1281-B874-44A23A4C5FF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C75BE53-BABC-1281-B874-44A23A4C5FF3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DD676DCC-364A-4898-B69C-C09F3206AEEE}
+	EndGlobalSection
+EndGlobal

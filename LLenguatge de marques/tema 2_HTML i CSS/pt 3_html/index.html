@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulari</title>
+</head>
+<body>
+
+<!-- 
+    Crea un formulari de subscripció a un butlletí de notícies: 
+
+    Camps requerits:
+        Nom complet (text)
+        Adreça de correu electrònic (email)
+        Preferències de contingut (checkbox entre 3 opcions)
+        País (select entre 5 països)
+        Comentaris addicionals (textarea)
+
+    Objectius de l'exercici:
+
+        Aplicar els coneixements apresos.
+        Implementar la validació bàsica.
+-->
+    <form action="https://httpbin.org/post" method="post" target="_blank">
+    <h2>Subscriu-te al nostre butlletí</h2>
+   
+    <!-- 1r part -->
+    <label for="nom">Nom complet:</label>
+    <input type="text" id="nom" name="nom" placeholder="Escriu el teu nom complet" required>
+
+    <!-- 2n part -->
+    <label for="email">Correu electrònic:</label>
+    <input type="email" id="email" name="email" placeholder="exemple@domini.com" required aria-describedby="email-help">
+    <span id="email-help">Introdueix un correu electrònic vàlid.</span>
+
+    <!-- 3r part -->
+    <fieldset style="display: flex; gap: 15px;" >
+    <legend>Temes que t’interessen:</legend>
+    <div>
+
+        <input type="checkbox" id="tecnologia" name="preferencies" value="tecnologia">
+        <label for="tecnologia">Tecnologia</label>
+    </div>
+    <div>
+        <input type="checkbox" id="esports" name="preferencies" value="esports">
+        <label for="esports">Esports</label>
+    </div>
+    <div>
+        <input type="checkbox" id="musica" name="preferencies" value="musica">
+        <label for="musica">Música</label>
+
+    </div>
+    </fieldset>
+
+    <!-- 4t part -->
+    <label for="pais">País:</label>
+    <select id="pais" name="pais" required>
+    <option value="">--Selecciona el teu país--</option>
+    <option value="espanya">Espanya</option>
+    <option value="frança">França</option>
+    <option value="itali">Itàlia</option>
+    <option value="alemanya">Alemanya</option>
+    <option value="portugal">Portugal</option>
+    </select>
+
+    <!-- 5t part -->
+    <label for="comentaris">Comentaris addicionals:</label>
+    <textarea id="comentaris" name="comentaris" rows="4" cols="40" placeholder="Escriu aquí els teus comentaris..."></textarea>
+
+    <!-- 6t part -->
+    <label>
+    <input type="checkbox" required>
+    Accepto les condicions d’ús
+    </label>
+
+    <button type="submit">Enviar</button>
+    </form> 
+
+
+</body>
+</html>
